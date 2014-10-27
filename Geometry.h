@@ -4,6 +4,7 @@
 #define Geometry_h
 
 #include <TROOT.h>
+#include <TString.h>
 
 #include <iostream>
 #include <fstream>
@@ -33,6 +34,7 @@ public:
    Double_t tdir_[16];              // direction (+1 or -1) of the sensor's abs strip number (same as the sensor chip address) wrt t-axis
    Double_t ut_[4];                 // u-coordinate of each t-layer
    Double_t angle_;
+   TString phantom_;
 public:
    Geometry(Int_t the_run, const char* dbname, Double_t offset_rear_telescope=8.): pitch_(0.228)
                                                                                    , offset_rear_telescope_(offset_rear_telescope)
@@ -270,6 +272,9 @@ public:
       }
       ss >> phantom;
       //cout<< "--> phantom = " << phantom <<endl;
+
+      phantom_ = phantom.c_str();                       // assign to the Geometry::phantom_
+
       if (phantom == phantom_pyramid_str) {
          nbricks = -1;
          ss >> nbricks;

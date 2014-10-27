@@ -84,13 +84,17 @@ void recoRun(const char* ifname
    else cout<< "event time tag was not written out" <<endl;
    cout<<endl;
 
-   // pass the runHeader from the input to the output tree
-   otree->GetUserInfo()->Add(runHeader);
-
    //
    // read the database
    //
    Geometry* geometry = new Geometry(runHeader->GetRun(), dbname);
+
+   // add the angle and the phantom name to the runHeader
+   runHeader->SetAngle(geometry->angle_);
+   runHeader->SetPhantom(geometry->phantom_.Data());
+
+   // pass the runHeader from the input to the output tree
+   otree->GetUserInfo()->Add(runHeader);
 
    PCTSensors* pCTSensors = new PCTSensors(geometry);
 

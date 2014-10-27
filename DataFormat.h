@@ -9,6 +9,7 @@
 #include <TObject.h>
 #include <TFile.h>
 #include <TTree.h>
+#include <TString.h>
 
 #include <iostream>
 #include <iomanip>
@@ -229,8 +230,16 @@ class RunHeader: public TObject {
    Int_t time;                         // 32-bit start time in seconds
    Bool_t timeTag;                     // 8-bit status bit, set if event time tags are written out
    UChar_t version;                    // 8-bit program version number, e.g. 44
+   Float_t angle;
+   TString phantom;
 public:
-   RunHeader(): TObject() {}
+   RunHeader(): TObject()
+                , run(0)
+                , time(0)
+                , timeTag(0)
+                , version(0)
+                , angle(0)
+   {}
    void Fill(char buf_run[3]
              , char buf_time[4]
              , char buf_timeTag
@@ -268,10 +277,13 @@ public:
       cout<< timestr;
       return timestr;
    }
-
    Int_t GetVersion() const {return version;}
+   Float_t GetAngle() const {return angle;}
+   TString GetPhantom() const {return phantom;}
+   void SetAngle(Float_t the_angle) {angle = the_angle;}
+   void SetPhantom(const char* the_phantom) {phantom = the_phantom;}
 
-   ClassDef(RunHeader, 3);
+   ClassDef(RunHeader, 4);
 };
 
 #endif  // DataFormat_h
