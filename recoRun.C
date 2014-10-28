@@ -98,8 +98,10 @@ void recoRun(const char* ifname
 
    PCTSensors* pCTSensors = new PCTSensors(geometry);
 
-   Double_t Rbeamspot = TMath::Sqrt(15.7*15.7 + 13.48*13.48);
-   BeamSpot beamSpot(23.27, -16.78, -3500, Rbeamspot);            // beamspot from July 2014 test, R ~ 5*1.42*15 ~ 105 mm
+   //-- Double_t Rbeamspot = TMath::Sqrt(15.7*15.7 + 13.48*13.48);
+   //-- BeamSpot beamSpot(23.27, -16.78, -3500, Rbeamspot);            // beamspot from July 2014 test, R ~ 5*1.42*15 ~ 105 mm
+   Double_t Rbeamspot = TMath::Sqrt(16.62*16.62 + 13.62*13.62);      // Sep2014 beam test
+   BeamSpot beamSpot(35.52,-1.07,-3500);                             // Sep2014 beam test
 
    Int_t tnchan = 400, vnchan = 20;
    Double_t tlow = -200., tup = 200., vlow = -50, vup = 50;
@@ -255,7 +257,7 @@ void recoRun(const char* ifname
    ofile->Write();
 }
 
-void recoEvent(Int_t event=100128, TTree* tree=0
+void recoEvent(Int_t event, TTree* tree=0
                , bool debug=true
                , const char* dbname="rundb-Sep2014.dat"
               )
@@ -292,7 +294,7 @@ void recoEvent(Int_t event=100128, TTree* tree=0
    cout<< "pCTSensors->TStrip(40,0) = " << pCTSensors->TStrip(40,0) <<endl;
    cout<< "pCTSensors->TStrip(120,0) = " << pCTSensors->TStrip(120,0) <<endl;
 
-   BeamSpot beamSpot(20,-17,-3500);
+   BeamSpot beamSpot(35.34,-1.20,-3500);        // Sep2014 beam test
 
    if (tree->LoadTree(event) < 0) {
       cout<< "Could not load event " << event <<endl;

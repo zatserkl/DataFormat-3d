@@ -39,6 +39,8 @@ public:
    Int_t event_;
    Int_t nhitv_[4];
    Int_t nhitt_[4];
+   Float_t vreco_[4];
+   Float_t treco_[4];
    std::list<const Track2D*> tin_;
    std::list<const Track2D*> tout_;
    std::list<const Track2D*> vin_;
@@ -62,6 +64,11 @@ public:
       , event_(event)
    {
       //cout<< "Reco::Reco" <<endl;
+
+      for (int ilayer=0; ilayer<4; ++ilayer) {
+         vreco_[ilayer] = 0;
+         treco_[ilayer] = 0;
+      }
 
       deltaT_ = pCTEvent_->deltaT;
       //cout<< "Reco::Reco: create pool" <<endl;
@@ -289,7 +296,8 @@ public:
                      SensorHit* gapHit = new ((*Sensor::poolSensorHit_)[Sensor::poolSensorHit_->GetLast()+1]) SensorHit(sensorId, 0, 0, geometry_->ut_[layer+1], pos_mean);
                      //-- SensorHit* gapHit = new ((*Sensor::poolSensorHit_)[Sensor::poolSensorHit_->GetLast()+1]) SensorHit(sensorId, 0, 0, geometry_->ut_[layer+1], pCTSensors_->gap_.tgap_[layer+1][igap]);
                      closestHit = gapHit;
-                     if (debug_) cout<< "\n--> event_ = " << event_ << " recovered hit in downstream layer pos - pCTSensors_->gap_.tgap_[" << layer+1 << "][igap] = " << pos - pCTSensors_->gap_.tgap_[layer+1][igap] << " pos = " << pos << " gapHit: " << *gapHit <<endl;
+                     treco_[layer+1] = pos_mean;
+                     if (debug_) cout<< "\n--> event_ = " << event_ << " recovered t-hit in downstream layer " << layer+1 << " pos - pCTSensors_->gap_.tgap_[" << layer+1 << "][igap] = " << pos - pCTSensors_->gap_.tgap_[layer+1][igap] << " pos = " << pos << " gapHit: " << *gapHit <<endl;
                      break;
                   }
                }
@@ -371,7 +379,8 @@ public:
                      SensorHit* gapHit = new ((*Sensor::poolSensorHit_)[Sensor::poolSensorHit_->GetLast()+1]) SensorHit(sensorId, 0, 0, geometry_->ut_[layer-1], pos_mean);
                      //-- SensorHit* gapHit = new ((*Sensor::poolSensorHit_)[Sensor::poolSensorHit_->GetLast()+1]) SensorHit(sensorId, 0, 0, geometry_->ut_[layer-1], pCTSensors_->gap_.tgap_[layer-1][igap]);
                      closestHit = gapHit;
-                     if (debug_) cout<< "\n--> event_ = " << event_ << " recovered hit in downstream layer pos - pCTSensors_->gap_.tgap_[" << layer-1 << "][igap] = " << pos - pCTSensors_->gap_.tgap_[layer-1][igap] << " pos = " << pos << " gapHit: " << *gapHit <<endl;
+                     treco_[layer-1] = pos_mean;
+                     if (debug_) cout<< "\n--> event_ = " << event_ << " recovered t-hit in upstream layer " << layer-1 << " pos - pCTSensors_->gap_.tgap_[" << layer-1 << "][igap] = " << pos - pCTSensors_->gap_.tgap_[layer-1][igap] << " pos = " << pos << " gapHit: " << *gapHit <<endl;
                      break;
                   }
                }
@@ -486,7 +495,8 @@ public:
                         SensorHit* gapHit = new ((*Sensor::poolSensorHit_)[Sensor::poolSensorHit_->GetLast()+1]) SensorHit(sensorId, 0, 0, geometry_->uv_[layer+1], pos);
                         closestHit = gapHit;
                         found_gap = true;
-                        if (debug_) cout<< "\n--> event_ = " << event_ << " recovered hit in downstream layer t_pos - pCTSensors_->gap_.vgap_[layer+1][igap] = " << t_pos - pCTSensors_->gap_.vgap_[layer+1][igap] <<endl;
+                        vreco_[layer+1] = pos;
+                        if (debug_) cout<< "\n--> event_ = " << event_ << " recovered v-hit in downstream layer " << layer+1 << " t_pos - pCTSensors_->gap_.vgap_[layer+1][igap] = " << t_pos - pCTSensors_->gap_.vgap_[layer+1][igap] <<endl;
                         //
                         // TODO: mark this pair of t- and v- tracks
                         //
@@ -570,7 +580,8 @@ public:
                         SensorHit* gapHit = new ((*Sensor::poolSensorHit_)[Sensor::poolSensorHit_->GetLast()+1]) SensorHit(sensorId, 0, 0, geometry_->uv_[layer-1], pos);
                         closestHit = gapHit;
                         found_gap = true;
-                        if (debug_) cout<< "\n--> event_ = " << event_ << " recovered hit in upstream layer t_pos - pCTSensors_->gap_.vgap_[layer-1][igap] = " << t_pos - pCTSensors_->gap_.vgap_[layer-1][igap] <<endl;
+                        vreco_[layer-1] = pos;
+                        if (debug_) cout<< "\n--> event_ = " << event_ << " recovered v-hit in upstream layer " << layer-1 << " t_pos - pCTSensors_->gap_.vgap_[layer-1][igap] = " << t_pos - pCTSensors_->gap_.vgap_[layer-1][igap] <<endl;
                         //
                         // TODO: mark this pair of t- and v- tracks
                         //
@@ -857,6 +868,8 @@ public:
    Float_t wepl;
    Int_t nhitv[4];
    Int_t nhitt[4];
+   Float_t vreco[4];
+   Float_t treco[4];
    RecoEvent(): TObject(), ok(kTRUE), nt(0) {
       //cout<< "ctor RecoEvent: create the track" <<endl;
       track = new TClonesArray("SuperTrack");
@@ -875,6 +888,10 @@ public:
       for (int i=0; i<5; ++i) {
          a[i] = 0;
          ped[i] = 0;
+      }
+      for (int ilayer=0; ilayer<4; ++ilayer) {
+         vreco[ilayer] = 0;
+         treco[ilayer] = 0;
       }
       for (int ichan=0; ichan<5; ++ichan) for (int isample=0; isample<16; ++isample) sample[ichan][isample] = 0;
       wepl = 0;
@@ -903,11 +920,25 @@ public:
 
       return sum;
    }
+   Int_t Nvreco() const {
+      Int_t nrecovered = 0;
+      for (int ilayer=0; ilayer<4; ++ilayer) if (vreco[ilayer] != 0) ++nrecovered;
+      return nrecovered;
+   }
+   Int_t Ntreco() const {
+      Int_t nrecovered = 0;
+      for (int ilayer=0; ilayer<4; ++ilayer) if (treco[ilayer] != 0) ++nrecovered;
+      return nrecovered;
+   }
    void SetWEPL(Double_t the_wepl) {wepl = the_wepl;}
    void Extract(const Reco& reco) {
       //cout<< "RecoEvent::Extract" <<endl;
       clear();
       deltaT = reco.deltaT_;
+      for (int ilayer=0; ilayer<4; ++ilayer) {
+         vreco[ilayer] = reco.vreco_[ilayer];
+         treco[ilayer] = reco.treco_[ilayer];
+      }
       for (std::list<const SuperTrack*>::const_iterator it=reco.superTracks_.begin(); it!=reco.superTracks_.end(); ++it) {
          const SuperTrack* superTrack = *it;
          //cout<< "Extract: add SuperTrack into the TClonesArray" <<endl;
@@ -1009,7 +1040,7 @@ public:
       /////////////////////////////
    }
 
-   ClassDef(RecoEvent, 10);
+   ClassDef(RecoEvent, 11);
 };
 
 #ifdef __MAKECINT__
