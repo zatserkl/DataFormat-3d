@@ -72,7 +72,7 @@ void recoRun(const char* ifname
    //cout<< "trying to open output file " << ofname.str() <<endl;
    TFile* ofile = new TFile(ofname.c_str(), "recreate");
    TTree* otree = new TTree("r", Form("Reconstruction of %s",ifname));
-   otree->SetMarkerColor(2);
+   otree->SetMarkerColor(602);
    otree->Branch("revent", "RecoEvent", &recoEvent);
 
    RunHeader* runHeader = new RunHeader(*((RunHeader*) tree->GetUserInfo()->First()));  // use copy constructor
